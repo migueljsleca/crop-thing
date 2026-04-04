@@ -389,7 +389,7 @@ export default function Home() {
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Trim images tight to their edges and export them fast.
+                  Crop PNGs right to the subject.
                 </p>
               </div>
             </div>
@@ -471,9 +471,6 @@ export default function Home() {
                 <div className="space-y-3 pt-6">
                   <CardHeader className="px-0">
                     <CardTitle>Export</CardTitle>
-                    <CardDescription>
-                      Choose mode and type any custom value.
-                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 px-0">
                     <div className="grid grid-cols-[minmax(0,1fr)_120px] gap-2">
