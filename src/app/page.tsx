@@ -6,10 +6,12 @@ import { ChangeEvent, DragEvent, useEffect, useRef, useState } from "react";
 import {
   Download,
   LoaderCircle,
+  Menu,
   MoreHorizontal,
   Package,
   Trash2,
   Upload,
+  X,
 } from "lucide-react";
 import {
   CropResult,
@@ -36,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
 
 type ImageItem = {
   id: string;
@@ -74,6 +77,7 @@ export default function Home() {
   const [exportValue, setExportValue] = useState(DEFAULT_EXPORT_VALUE);
   const [isDragging, setIsDragging] = useState(false);
   const [isExportingZip, setIsExportingZip] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [thumbnailMenu, setThumbnailMenu] = useState<ThumbnailMenuState | null>(
     null,
   );
@@ -115,6 +119,45 @@ export default function Home() {
       window.removeEventListener("keydown", handleEscape);
     };
   }, [thumbnailMenu]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 800px)");
+
+    const handleChange = (event: MediaQueryList | MediaQueryListEvent) => {
+      if (event.matches) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    handleChange(mediaQuery);
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isSidebarOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [isSidebarOpen]);
 
   const readyItems = items.filter((item) => item.status === "ready" && item.result);
   const activeItem =
@@ -373,12 +416,30 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <div className="grid min-h-screen xl:grid-cols-[340px_minmax(0,1fr)]">
-        <aside className="border-r border-border bg-background">
-          <div className="sticky top-0 flex h-screen flex-col">
+      <div className="grid min-h-screen min-[800px]:grid-cols-[320px_minmax(0,1fr)] xl:grid-cols-[340px_minmax(0,1fr)]">
+        {isSidebarOpen ? (
+          <button
+            type="button"
+            aria-label="Close controls panel"
+            className="fixed inset-0 z-30 bg-background/70 backdrop-blur-[2px] min-[800px]:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        ) : null}
+
+        <aside
+          className={cn(
+            "border-border bg-background",
+            "max-[799px]:fixed max-[799px]:inset-y-0 max-[799px]:left-0 max-[799px]:z-40 max-[799px]:w-[min(22rem,calc(100vw-2rem))] max-[799px]:border-r max-[799px]:shadow-xl max-[799px]:transition-transform max-[799px]:duration-200",
+            "min-[800px]:border-r",
+            isSidebarOpen
+              ? "max-[799px]:translate-x-0"
+              : "max-[799px]:-translate-x-[calc(100%+1px)]",
+          )}
+        >
+          <div className="flex h-full flex-col min-[800px]:sticky min-[800px]:top-0 min-[800px]:h-screen">
             <div className="border-b border-border px-4 py-4 md:px-5">
               <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between gap-3">
                   <Image
                     src="/crop-thing-logo.svg"
                     alt="Crop Thing logo"
@@ -387,6 +448,16 @@ export default function Home() {
                     priority
                     className="h-[39px] w-auto"
                   />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="min-[800px]:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                    aria-label="Close controls"
+                  >
+                    <X />
+                  </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Crop PNGs right to the subject.
@@ -394,7 +465,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 py-4 md:px-5">
+            <div className="flex-1 px-4 py-4 min-[800px]:overflow-y-auto md:px-5">
               <div className="flex flex-col gap-4">
                 <div className="space-y-3">
                   <CardHeader className="px-0">
@@ -427,7 +498,7 @@ export default function Home() {
                       className="hidden"
                       onChange={handleFileChange}
                     />
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-muted-foreground">
                       <span>{items.length} imported</span>
                       <span>{readyItems.length} ready</span>
                     </div>
@@ -473,7 +544,7 @@ export default function Home() {
                     <CardTitle>Export</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4 px-0">
-                    <div className="grid grid-cols-[minmax(0,1fr)_120px] gap-2">
+                    <div className="grid gap-2 min-[460px]:grid-cols-[minmax(0,1fr)_120px]">
                       <Select
                         value={exportMode}
                         onValueChange={(value) => {
@@ -537,14 +608,28 @@ export default function Home() {
         </aside>
 
         <section
-          className="relative flex h-screen min-h-screen flex-col"
+          className="relative flex min-h-[50svh] flex-col min-[800px]:h-screen min-[800px]:min-h-screen"
           onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
+          <div className="absolute left-4 top-4 z-30 min-[800px]:hidden">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70"
+              onClick={() => setIsSidebarOpen(true)}
+              aria-label="Open controls"
+              aria-expanded={isSidebarOpen}
+            >
+              <Menu />
+            </Button>
+          </div>
+
           {items.length > 0 ? (
-            <div className="absolute left-0 right-0 top-0 z-10 px-4 py-4 md:px-6">
+            <div className="absolute left-0 right-0 top-0 z-10 px-4 py-4 pl-20 min-[800px]:px-6 min-[800px]:pl-6">
               <div className="flex gap-3 overflow-x-auto">
                 {items.map((item) => {
                   const isActive = item.id === activeItem?.id;
@@ -642,9 +727,11 @@ export default function Home() {
           ) : null}
 
           <div
-            className={`flex min-h-0 flex-1 items-center justify-center px-4 pb-8 pt-4 transition-colors md:px-6 md:pb-10 md:pt-6 ${
-              isDragging ? "bg-muted/20" : ""
-            }`}
+            className={cn(
+              "flex min-h-0 flex-1 items-center justify-center px-4 pb-8 transition-colors min-[800px]:px-6 min-[800px]:pb-10 min-[800px]:pt-6",
+              items.length > 0 ? "pt-24" : "pt-18",
+              isDragging ? "bg-muted/20" : "",
+            )}
           >
             <CropCanvasPreview
               item={activeItem}
