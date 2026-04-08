@@ -602,7 +602,21 @@ export default function Home() {
             </div>
 
             <div className="px-4 pb-4 pt-2 text-xs text-muted-foreground md:px-5">
-              Built by Miguel Leca
+              <a
+                href="https://github.com/migueljsleca/crop-thing"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label="View Crop Thing on GitHub"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="h-4 w-4 fill-current"
+                >
+                  <path d="M12 1.5a10.5 10.5 0 0 0-3.32 20.46c.53.1.72-.23.72-.5v-1.95c-2.95.64-3.57-1.25-3.57-1.25-.48-1.2-1.16-1.52-1.16-1.52-.95-.65.07-.64.07-.64 1.05.08 1.6 1.07 1.6 1.07.94 1.58 2.46 1.12 3.06.86.1-.67.37-1.12.67-1.38-2.36-.26-4.85-1.16-4.85-5.2 0-1.15.42-2.1 1.1-2.84-.11-.26-.48-1.33.1-2.77 0 0 .9-.28 2.96 1.08a10.4 10.4 0 0 1 5.4 0c2.06-1.36 2.95-1.08 2.95-1.08.58 1.44.22 2.51.11 2.77.69.74 1.1 1.69 1.1 2.84 0 4.05-2.5 4.93-4.88 5.19.38.33.72.98.72 1.98v2.94c0 .28.19.61.73.5A10.5 10.5 0 0 0 12 1.5Z" />
+                </svg>
+              </a>
             </div>
           </div>
         </aside>
