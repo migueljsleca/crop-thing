@@ -459,7 +459,7 @@ export default function Home() {
                     <X />
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   Crop PNGs right to the subject.
                 </p>
               </div>
@@ -520,7 +520,6 @@ export default function Home() {
                   <CardContent className="space-y-5 px-0">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Padding</span>
                         <span>{settings.paddingPercent}%</span>
                       </div>
                       <Slider
